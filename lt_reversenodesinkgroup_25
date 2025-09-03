@@ -1,0 +1,36 @@
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode prevGroupEnd = dummy;
+
+        while (true) {
+            ListNode kth = getKth(prevGroupEnd, k);
+            if (kth == null) break; // 剩下不足 k 個
+            ListNode groupNext = kth.next;
+
+            // 反轉 [prevGroupEnd.next, kth]
+            ListNode prev = groupNext, curr = prevGroupEnd.next;
+            while (curr != groupNext) {
+                ListNode tmp = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = tmp;
+            }
+
+            ListNode tmp = prevGroupEnd.next;
+            prevGroupEnd.next = kth;
+            prevGroupEnd = tmp;
+        }
+
+        return dummy.next;
+    }
+
+    private ListNode getKth(ListNode curr, int k) {
+        while (curr != null && k > 0) {
+            curr = curr.next;
+            k--;
+        }
+        return curr;
+    }
+}
