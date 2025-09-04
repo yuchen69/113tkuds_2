@@ -1,0 +1,58 @@
+import java.util.*;
+
+class Solution {
+    public List<Integer> findSubstring(String s, String[] words) {
+        List<Integer> res = new ArrayList<>();
+        if (s.length() == 0 || words.length == 0) return res;
+
+        int wordLen = words[0].length();
+        int wordCount = words.length;
+        int totalLen = wordLen * wordCount;
+
+        Map<String, Integer> wordMap = new HashMap<>();
+        for (String word : words) {
+            wordMap.put(word, wordMap.getOrDefault(word, 0) + 1);
+        }
+
+        for (int i = 0; i < wordLen; i++) {
+            int left = i, count = 0;
+            Map<String, Integer> window = new HashMap<>();
+
+            for (int j = i; j <= s.length() - wordLen; j += wordLen) {
+                String str = s.substring(j, j + wordLen);
+                if (wordMap.containsKey(str)) {
+                    window.put(str, window.getOrDefault(str, 0) + 1);
+                    count++;
+
+                    while (window.get(str) > wordMap.get(str)) {
+                        String leftWord = s.substring(left, left + wordLen);
+                        window.put(leftWord, window.get(leftWord) - 1);
+                        left += wordLen;
+                        count--;
+                    }
+
+                    if (count == wordCount) {
+                        res.add(left);
+                        String leftWord = s.substring(left, left + wordLen);
+                        window.put(leftWord, window.get(leftWord) - 1);
+                        left += wordLen;
+                        count--;
+                    }
+                } else {
+                    window.clear();
+                    count = 0;
+                    left = j + wordLen;
+                }
+            }
+        }
+        return res;
+    }
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        System.out.println(sol.findSubstring("barfoothefoobarman", new String[]{"foo","bar"}));
+        // 輸出: [0,9]
+        System.out.println(sol.findSubstring("barfoofoobarthefoobarman", new String[]{"bar","foo","the"}));
+        // 輸出: [6,9,12]
+    }
+}
